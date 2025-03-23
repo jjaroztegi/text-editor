@@ -6,8 +6,11 @@ project(text_editor LANGUAGES CXX)
 find_package(SDL2 CONFIG REQUIRED)
 find_package(SDL2_TTF CONFIG REQUIRED)
 
+# Add source files
+file(GLOB_RECURSE SOURCES src/*.cpp)
+
 # Create target
-add_executable(text_editor src/main.cpp)
+add_executable(text_editor ${SOURCES})
 
 # Set C++ standard to 20
 target_compile_features(text_editor PRIVATE cxx_std_20)
