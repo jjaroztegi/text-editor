@@ -32,4 +32,5 @@
 
 ## Bugs
 
-- [ ] When zooming forces wordWrap, the cursor position gets misaligned.
+- [x] When zooming forces wordWrap, the cursor position gets misaligned.
+- [ ] Cursor misalignment with multi-byte UTF-8 characters (e.g., "ñ"), where the cursor treats individual bytes instead of whole characters.
