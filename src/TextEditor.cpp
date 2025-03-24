@@ -22,7 +22,7 @@ void TextEditor::backspace() {
 }
 
 void TextEditor::setTextSize(int size) {
-    textSize = (size < 5) ? 5 : size;
+    textSize = (size < 5) ? 5 : ((size > 75) ? 75 : size);
 }
 
 void TextEditor::moveCursor(int delta) {
@@ -35,7 +35,7 @@ void TextEditor::moveCursorVertical(int lines) {
 }
 
 void TextEditor::setWrapLength(int width) {
-    wrapLength = width - 20;
+    wrapLength = width - 40;
 }
 
 void TextEditor::renderText(SDL_Renderer *renderer, int textX, int textY) const {
@@ -44,8 +44,8 @@ void TextEditor::renderText(SDL_Renderer *renderer, int textX, int textY) const 
 
     TTF_Font *font =
         static_cast<TTF_Font *>(scp(TTF_OpenFont("IosevkaNerdFont-Regular.ttf", textSize)));
-    SDL_Surface *textSurface = static_cast<SDL_Surface *>(scp(
-        TTF_RenderText_Shaded_Wrapped(font, inputText.c_str(), textColor, bgColor, wrapLength)));
+    SDL_Surface *textSurface = static_cast<SDL_Surface *>(
+        scp(TTF_RenderUTF8_LCD_Wrapped(font, inputText.c_str(), textColor, bgColor, wrapLength)));
     SDL_Texture *textTexture =
         static_cast<SDL_Texture *>(scp(SDL_CreateTextureFromSurface(renderer, textSurface)));
 
@@ -65,19 +65,56 @@ void TextEditor::renderCursor(SDL_Renderer *renderer, int textX, int textY) cons
     scc(TTF_SizeText(font, " ", &textWidth, &textHeight)); // Monospace assumption
     TTF_CloseFont(font);
 
-    int charsPerLine = (wrapLength / textWidth) > 0 ? (wrapLength / textWidth) : 1;
     int cursorX = 0, cursorY = 0;
-    for (int i = 0; i < cursorIndex && i < static_cast<int>(inputText.length()); i++) {
+    int lineWidth = 0;
+    int lastSpaceIndex = -1;
+
+    int textLen = static_cast<int>(inputText.length());
+    int maxIndex = (cursorIndex <= textLen) ? cursorIndex : textLen;
+
+    int i = 0;
+    while (i < maxIndex) {
         if (inputText[i] == '\n') {
             cursorX = 0;
             cursorY++;
-        } else {
-            cursorX++;
-            if (cursorX >= charsPerLine) {
+            lineWidth = 0;
+            lastSpaceIndex = -1; // Reset index for a new line
+            i++;
+            continue;
+        }
+
+        // Handle word wrap by backtracking to last space index
+        if (inputText[i] == ' ') {
+            if (lineWidth + textWidth > wrapLength) {
+                if (lastSpaceIndex >= 0) {
+                    i = lastSpaceIndex + 1;
+                } else {
+                    i++;
+                }
                 cursorX = 0;
                 cursorY++;
+                lineWidth = 0;
+                continue;
             }
+            lastSpaceIndex = i;
         }
+
+        if (lineWidth + textWidth > wrapLength) {
+            if (lastSpaceIndex >= 0) {
+                i = lastSpaceIndex + 1;
+                lastSpaceIndex = -1;
+            } else {
+                i++;
+            }
+            cursorX = 0;
+            cursorY++;
+            lineWidth = 0;
+            continue;
+        }
+
+        cursorX++;
+        lineWidth += textWidth;
+        i++;
     }
 
     int pixelCursorX = textX + cursorX * textWidth;
