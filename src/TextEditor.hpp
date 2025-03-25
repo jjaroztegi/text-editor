@@ -14,6 +14,13 @@ private:
     SDL_Color bgColor;
     int wrapLength;
 
+    struct CursorPos {
+        int x;
+        int y;
+        int lineWidth;
+    };
+    CursorPos getCursorPosition(int targetIndex, int textWidth) const;
+
     void renderText(SDL_Renderer *renderer, int textX, int textY) const;
     void renderCursor(SDL_Renderer *renderer, int textX, int textY) const;
 
@@ -24,7 +31,7 @@ public:
     void insertText(const std::string &text);
     void backspace();
     void moveCursor(int delta);         // For LEFT/RIGHT
-    void moveCursorVertical(int lines); // For UP/DOWN (TODO)
+    void moveCursorVertical(int lines); // For UP/DOWN
 
     void setWrapLength(int width);
     void setTextSize(int size);

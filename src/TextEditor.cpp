@@ -14,6 +14,52 @@ void TextEditor::insertText(const std::string &text) {
     }
 }
 
+TextEditor::CursorPos TextEditor::getCursorPosition(int targetIndex, int textWidth) const {
+    CursorPos pos = {0, 0, 0};
+    int lastSpaceIndex = -1;
+
+    int textLen = static_cast<int>(inputText.length());
+    int maxIndex = (targetIndex <= textLen) ? targetIndex : textLen;
+
+    int i = 0;
+    while (i < maxIndex) {
+        if (inputText[i] == '\n') {
+            pos.x = 0;
+            pos.y++;
+            pos.lineWidth = 0;
+            lastSpaceIndex = -1; // Reset index for a new line
+            i++;
+            continue;
+        }
+
+        // Handle word wrap by backtracking to last space index
+        if (pos.lineWidth + textWidth > wrapLength) {
+            if (lastSpaceIndex >= 0) {
+                i = lastSpaceIndex + 1;
+                pos.lineWidth = 0;
+                lastSpaceIndex = -1;
+                pos.x = 0;
+            } else {
+                pos.lineWidth = textWidth;
+                pos.x = 1;
+                i++;
+            }
+            pos.y++;
+            continue;
+        }
+
+        pos.x++;
+        pos.lineWidth += textWidth;
+        if (inputText[i] == ' ') {
+            lastSpaceIndex = i;
+        }
+
+        i++;
+    }
+
+    return pos;
+}
+
 void TextEditor::backspace() {
     if (!inputText.empty() && cursorIndex > 0) {
         cursorIndex--;
@@ -30,8 +76,38 @@ void TextEditor::moveCursor(int delta) {
 }
 
 void TextEditor::moveCursorVertical(int lines) {
-    // TODO: Implement UP/DOWN logic using font metrics and wrapLength
-    std::cerr << "moveCursorVertical not implemented yet" << std::endl;
+    TTF_Font *font =
+        static_cast<TTF_Font *>(scp(TTF_OpenFont("IosevkaNerdFont-Regular.ttf", textSize)));
+    int textWidth, textHeight;
+    scc(TTF_SizeText(font, " ", &textWidth, &textHeight)); // Monospace assumption
+    TTF_CloseFont(font);
+
+    CursorPos currentPos = getCursorPosition(cursorIndex, textWidth);
+    int currentLine = currentPos.y;
+    int currentColumn = currentPos.x;
+    int textLen = static_cast<int>(inputText.length());
+
+    int targetLine = currentLine + lines;
+    if (targetLine < 0) {
+        targetLine = 0;
+    }
+
+    int validIndex = cursorIndex;
+
+    for (int i = 0; i < textLen; i++) {
+        CursorPos pos = getCursorPosition(i, textWidth);
+        if (pos.y == targetLine) {
+            validIndex = i;
+            if (pos.x >= currentColumn) {
+                cursorIndex = i;
+                return;
+            }
+        } else if (pos.y > targetLine) {
+            cursorIndex = validIndex;
+            return;
+        }
+    }
+    cursorIndex = validIndex;
 }
 
 void TextEditor::setWrapLength(int width) {
@@ -58,6 +134,7 @@ void TextEditor::renderText(SDL_Renderer *renderer, int textX, int textY) const 
     TTF_CloseFont(font);
 }
 
+// TODO: curosr inside wrapped word jumps to prev line
 void TextEditor::renderCursor(SDL_Renderer *renderer, int textX, int textY) const {
     TTF_Font *font =
         static_cast<TTF_Font *>(scp(TTF_OpenFont("IosevkaNerdFont-Regular.ttf", textSize)));
@@ -65,51 +142,10 @@ void TextEditor::renderCursor(SDL_Renderer *renderer, int textX, int textY) cons
     scc(TTF_SizeText(font, " ", &textWidth, &textHeight)); // Monospace assumption
     TTF_CloseFont(font);
 
-    int cursorX = 0, cursorY = 0;
-    int lineWidth = 0;
-    int lastSpaceIndex = -1;
+    CursorPos pos = getCursorPosition(cursorIndex, textWidth);
 
-    int textLen = static_cast<int>(inputText.length());
-    int maxIndex = (cursorIndex <= textLen) ? cursorIndex : textLen;
-
-    int i = 0;
-    while (i < maxIndex) {
-        if (inputText[i] == '\n') {
-            cursorX = 0;
-            cursorY++;
-            lineWidth = 0;
-            lastSpaceIndex = -1; // Reset index for a new line
-            i++;
-            continue;
-        }
-
-        // Handle word wrap by backtracking to last space index
-        if (lineWidth + textWidth > wrapLength) {
-            if (lastSpaceIndex >= 0) {
-                i = lastSpaceIndex + 1;
-                lineWidth = 0;
-                lastSpaceIndex = -1;
-                cursorX = 0;
-            } else {
-                lineWidth = textWidth;
-                cursorX = 1;
-                i++;
-            }
-            cursorY++;
-            continue;
-        }
-
-        cursorX++;
-        lineWidth += textWidth;
-        if (inputText[i] == ' ') {
-            lastSpaceIndex = i;
-        }
-
-        i++;
-    }
-
-    int pixelCursorX = textX + cursorX * textWidth;
-    int pixelCursorY = textY + cursorY * textHeight;
+    int pixelCursorX = textX + pos.x * textWidth;
+    int pixelCursorY = textY + pos.y * textHeight;
     SDL_Rect cursorRect = {pixelCursorX, pixelCursorY, textWidth, textHeight};
     scc(SDL_SetRenderDrawColor(renderer, cursorColor.r, cursorColor.g, cursorColor.b, 255));
     scc(SDL_RenderFillRect(renderer, &cursorRect));
