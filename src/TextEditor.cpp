@@ -22,7 +22,7 @@ void TextEditor::backspace() {
 }
 
 void TextEditor::setTextSize(int size) {
-    textSize = (size < 5) ? 5 : ((size > 75) ? 75 : size);
+    textSize = (size < 15) ? 15 : ((size > 180) ? 180 : size);
 }
 
 void TextEditor::moveCursor(int delta) {
@@ -84,36 +84,27 @@ void TextEditor::renderCursor(SDL_Renderer *renderer, int textX, int textY) cons
         }
 
         // Handle word wrap by backtracking to last space index
-        if (inputText[i] == ' ') {
-            if (lineWidth + textWidth > wrapLength) {
-                if (lastSpaceIndex >= 0) {
-                    i = lastSpaceIndex + 1;
-                } else {
-                    i++;
-                }
-                cursorX = 0;
-                cursorY++;
-                lineWidth = 0;
-                continue;
-            }
-            lastSpaceIndex = i;
-        }
-
         if (lineWidth + textWidth > wrapLength) {
             if (lastSpaceIndex >= 0) {
                 i = lastSpaceIndex + 1;
+                lineWidth = 0;
                 lastSpaceIndex = -1;
+                cursorX = 0;
             } else {
+                lineWidth = textWidth;
+                cursorX = 1;
                 i++;
             }
-            cursorX = 0;
             cursorY++;
-            lineWidth = 0;
             continue;
         }
 
         cursorX++;
         lineWidth += textWidth;
+        if (inputText[i] == ' ') {
+            lastSpaceIndex = i;
+        }
+
         i++;
     }
 
