@@ -2,6 +2,8 @@
 #include "SDLException.hpp"
 #include <iostream>
 
+#define textFont "fonts/IosevkaNerdFont-Regular.ttf"
+
 TextEditor::TextEditor()
     : inputText(""), cursorIndex(0), textSize(20), textColor{244, 244, 244, 255},
       cursorColor{255, 221, 51, 255}, bgColor{24, 24, 24, 255}, wrapLength(0) {
@@ -141,13 +143,49 @@ void TextEditor::setTextSize(int size) {
     textSize = (size < 15) ? 15 : ((size > 180) ? 180 : size);
 }
 
+void TextEditor::startSelection() {
+}
+
+void TextEditor::updateSelection(int newCursor) {
+}
+
+void TextEditor::endSelection() {
+}
+
+void TextEditor::copyToClipboard() {
+}
+
+void TextEditor::pasteFromClipboard() {
+}
+
+void TextEditor::saveToFile(const std::string &filePath) {
+}
+
+void TextEditor::loadFromFile(const std::string &filePath) {
+}
+
+void TextEditor::undo() {
+}
+
+void TextEditor::redo() {
+}
+
+void TextEditor::startSearch() {
+}
+
+void TextEditor::stopSearch() {
+}
+
+bool TextEditor::searchNext() {
+    return false;
+}
+
 void TextEditor::moveCursor(int delta) {
     cursorIndex = std::max(0, std::min(static_cast<int>(inputText.length()), cursorIndex + delta));
 }
 
 void TextEditor::moveCursorVertical(int lines) {
-    TTF_Font *font =
-        static_cast<TTF_Font *>(scp(TTF_OpenFont("IosevkaNerdFont-Regular.ttf", textSize)));
+    TTF_Font *font = static_cast<TTF_Font *>(scp(TTF_OpenFont(textFont, textSize)));
     int textWidth, textHeight;
     scc(TTF_SizeText(font, " ", &textWidth, &textHeight)); // Monospace assumption
     TTF_CloseFont(font);
@@ -180,6 +218,9 @@ void TextEditor::moveCursorVertical(int lines) {
     cursorIndex = validIndex;
 }
 
+void TextEditor::moveWord(bool right) {
+}
+
 void TextEditor::setWrapLength(int width) {
     wrapLength = width - 40;
 }
@@ -188,8 +229,7 @@ void TextEditor::renderText(SDL_Renderer *renderer, int textX, int textY) const 
     if (inputText.empty())
         return;
 
-    TTF_Font *font =
-        static_cast<TTF_Font *>(scp(TTF_OpenFont("IosevkaNerdFont-Regular.ttf", textSize)));
+    TTF_Font *font = static_cast<TTF_Font *>(scp(TTF_OpenFont(textFont, textSize)));
     SDL_Surface *textSurface = static_cast<SDL_Surface *>(
         scp(TTF_RenderUTF8_LCD_Wrapped(font, inputText.c_str(), textColor, bgColor, wrapLength)));
     SDL_Texture *textTexture =
@@ -206,8 +246,7 @@ void TextEditor::renderText(SDL_Renderer *renderer, int textX, int textY) const 
 
 // TODO: cursor inside wrapped word jumps to prev line
 void TextEditor::renderCursor(SDL_Renderer *renderer, int textX, int textY) const {
-    TTF_Font *font =
-        static_cast<TTF_Font *>(scp(TTF_OpenFont("IosevkaNerdFont-Regular.ttf", textSize)));
+    TTF_Font *font = static_cast<TTF_Font *>(scp(TTF_OpenFont(textFont, textSize)));
     int textWidth, textHeight;
     scc(TTF_SizeText(font, " ", &textWidth, &textHeight)); // Monospace assumption
     TTF_CloseFont(font);
@@ -222,7 +261,20 @@ void TextEditor::renderCursor(SDL_Renderer *renderer, int textX, int textY) cons
     scc(SDL_RenderFillRect(renderer, &cursorRect));
 }
 
+void TextEditor::renderSelection(SDL_Renderer *renderer, int textX, int textY,
+                                 int textWidth) const {
+}
+
+void TextEditor::saveStateForUndo() {
+}
+
 void TextEditor::render(SDL_Renderer *renderer, int textX, int textY) const {
+    TTF_Font *font = static_cast<TTF_Font *>(scp(TTF_OpenFont(textFont, textSize)));
+    int textWidth, textHeight;
+    scc(TTF_SizeText(font, " ", &textWidth, &textHeight));
+    TTF_CloseFont(font);
+
+    renderSelection(renderer, textX, textY, textWidth);
     renderText(renderer, textX, textY);
     renderCursor(renderer, textX, textY);
 }

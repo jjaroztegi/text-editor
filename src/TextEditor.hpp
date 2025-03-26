@@ -2,27 +2,41 @@
 
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_ttf.h>
+#include <stack>
 #include <string>
 
 class TextEditor {
 private:
     std::string inputText;
     int cursorIndex;
+    bool selectionActive;
+    int selectionStart;
     int textSize;
     SDL_Color textColor;
     SDL_Color cursorColor;
     SDL_Color bgColor;
     int wrapLength;
+    bool searching;
+    std::string searchQuery;
 
     struct CursorPos {
-        int x;
-        int y;
-        int lineWidth;
+        int x, y, lineWidth;
     };
     CursorPos getCursorPosition(int targetIndex, int textWidth) const;
 
+    struct UndoState {
+        std::string text;
+        int cursor;
+        int selectionStart;
+        bool selectionActive;
+    };
+    std::stack<UndoState> undoStack;
+    std::stack<UndoState> redoStack;
+
     void renderText(SDL_Renderer *renderer, int textX, int textY) const;
     void renderCursor(SDL_Renderer *renderer, int textX, int textY) const;
+    void renderSelection(SDL_Renderer *renderer, int textX, int textY, int textWidth) const;
+    void saveStateForUndo();
 
 public:
     TextEditor();
@@ -34,8 +48,9 @@ public:
     void deleteKey();
     void ctrlDelete();
     void findSpace(bool dir);
-    void moveCursor(int delta);         // For LEFT/RIGHT
-    void moveCursorVertical(int lines); // For UP/DOWN
+    void moveCursor(int delta);
+    void moveCursorVertical(int lines);
+    void moveWord(bool right);
 
     void setWrapLength(int width);
     void setTextSize(int size);
@@ -43,8 +58,20 @@ public:
         return textSize;
     }
 
-    // Rendering
-    void render(SDL_Renderer *renderer, int textX, int textY) const;
+    void startSelection();
+    void updateSelection(int newCursor);
+    void endSelection();
 
-    // TODO: Add methods for selection, save/load, undo/redo, etc.
+    void copyToClipboard();
+    void pasteFromClipboard();
+    void saveToFile(const std::string &filePath);
+    void loadFromFile(const std::string &filePath);
+    void undo();
+    void redo();
+
+    void startSearch();
+    void stopSearch();
+    bool searchNext();
+
+    void render(SDL_Renderer *renderer, int textX, int textY) const;
 };
