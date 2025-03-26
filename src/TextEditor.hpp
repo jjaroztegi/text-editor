@@ -57,10 +57,16 @@ public:
     int getTextSize() const {
         return textSize;
     }
+    int getCursorIndex() {
+        return cursorIndex;
+    }
 
     void startSelection();
     void updateSelection(int newCursor);
     void endSelection();
+    bool isSearching() {
+        return searching;
+    }
 
     void copyToClipboard();
     void pasteFromClipboard();
@@ -72,6 +78,7 @@ public:
     void startSearch();
     void stopSearch();
     bool searchNext();
+    void insertSearchQuery(const std::string &text);
 
     void render(SDL_Renderer *renderer, int textX, int textY) const;
 };

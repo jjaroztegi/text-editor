@@ -180,6 +180,9 @@ bool TextEditor::searchNext() {
     return false;
 }
 
+void TextEditor::insertSearchQuery(const std::string &text) {
+}
+
 void TextEditor::moveCursor(int delta) {
     cursorIndex = std::max(0, std::min(static_cast<int>(inputText.length()), cursorIndex + delta));
 }

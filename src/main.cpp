@@ -17,6 +17,8 @@ int main(int argc, char *argv[]) {
             scp(SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED)));
 
         TextEditor editor;
+        if (argc > 1)
+            editor.loadFromFile(argv[1]);
         InputHandler inputHandler(editor);
         SDL_StartTextInput();
 
