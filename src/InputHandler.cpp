@@ -13,7 +13,18 @@ void InputHandler::handleEvent(const SDL_Event &event) {
             SDL_Keycode key = event.key.keysym.sym;
             switch (key) {
                 case SDLK_BACKSPACE:
-                    editor.backspace();
+                    if (modifier & KMOD_CTRL) {
+                        editor.ctrlBackspace();
+                    } else {
+                        editor.backspace();
+                    }
+                    break;
+                case SDLK_DELETE:
+                    if (modifier & KMOD_CTRL) {
+                        editor.ctrlDelete();
+                    } else {
+                        editor.deleteKey();
+                    }
                     break;
                 case SDLK_RETURN:
                     editor.insertText("\n");

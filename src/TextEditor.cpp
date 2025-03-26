@@ -67,6 +67,76 @@ void TextEditor::backspace() {
     }
 }
 
+void TextEditor::ctrlBackspace() {
+    int originalIndex = cursorIndex;
+    findSpace(false);
+    int count = originalIndex - cursorIndex;
+
+    if (count > 0) {
+        inputText.erase(cursorIndex, count);
+    }
+}
+
+void TextEditor::deleteKey() {
+    if (!inputText.empty() && cursorIndex < inputText.length()) {
+        inputText.erase(cursorIndex, 1);
+        if (cursorIndex > inputText.length()) {
+            cursorIndex = (inputText.length());
+        }
+    }
+}
+
+void TextEditor::ctrlDelete() {
+    int originalIndex = cursorIndex;
+    findSpace(true);
+    int count = cursorIndex - originalIndex;
+
+    if (count > 0) {
+        inputText.erase(originalIndex, count);
+        if (cursorIndex > (inputText.length())) {
+            cursorIndex = (inputText.length());
+        } else {
+            cursorIndex = originalIndex;
+        }
+    }
+}
+
+void TextEditor::findSpace(bool dir) {
+    if (!inputText.empty()) {
+        if (dir == true) {
+            // Search forward
+            if (cursorIndex < inputText.length()) {
+                int count = 1;
+                for (int i = cursorIndex; i < inputText.length(); i++) {
+                    if (i < inputText.length() - 1 && inputText[i] == ' ' &&
+                        inputText[i + 1] == ' ') {
+                        ;
+                    } else if (inputText[i] == ' ' || inputText[i] == '\n') {
+                        break;
+                    }
+                    count++;
+                }
+                cursorIndex = (cursorIndex + count >= inputText.length()) ? inputText.length()
+                                                                          : (cursorIndex + count);
+            }
+        } else {
+            // Search backward
+            if (cursorIndex > 0) {
+                int count = 1;
+                for (int i = cursorIndex - 2; i >= 0; i--) {
+                    if (i > 0 && inputText[i] == ' ' && inputText[i - 1] == ' ') {
+                        ;
+                    } else if (inputText[i] == ' ' || inputText[i] == '\n') {
+                        break;
+                    }
+                    count++;
+                }
+                cursorIndex = (cursorIndex < 0) ? 0 : (cursorIndex - count);
+            }
+        }
+    }
+}
+
 void TextEditor::setTextSize(int size) {
     textSize = (size < 15) ? 15 : ((size > 180) ? 180 : size);
 }

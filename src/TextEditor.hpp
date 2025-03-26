@@ -30,6 +30,10 @@ public:
 
     void insertText(const std::string &text);
     void backspace();
+    void ctrlBackspace();
+    void deleteKey();
+    void ctrlDelete();
+    void findSpace(bool dir);
     void moveCursor(int delta);         // For LEFT/RIGHT
     void moveCursorVertical(int lines); // For UP/DOWN
 
