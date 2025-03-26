@@ -1,0 +1,60 @@
+name: Build and Test
+
+# Controls when the workflow will run
+on:
+  push:
+    branches: ["main"]
+  pull_request:
+    branches: ["main"]
+
+env:
+  VCPKG_ROOT: ${{ github.workspace }}/vcpkg
+
+jobs:
+  build:
+    # Define a matrix to run the job for each preset configuration
+    strategy:
+      fail-fast: false # Keep running other jobs even if one in the matrix fails
+      matrix:
+        preset:
+          # List all presets you want to build/test from CMakePresets.json
+          - linux-release
+          - windows-release
+          - macos-release
+
+    # Determine the runner OS based on the preset name for matrix jobs
+    runs-on: ${{ contains(matrix.preset, 'windows') && 'windows-latest' || (contains(matrix.preset, 'macos') && 'macos-latest' || 'ubuntu-latest') }}
+
+    steps:
+      # --- Checkout Code ---
+      - name: Checkout repository code
+        uses: actions/checkout@v4
+
+      # --- vcpkg Setup ---
+      - name: Checkout vcpkg repository
+        uses: actions/checkout@v4
+        with:
+          repository: "microsoft/vcpkg"
+          # Optional: Pin to a specific vcpkg version for reproducibility
+          # ref: '2023.10.19' # Example tag, check for the latest stable release
+          path: "vcpkg" # Checkout vcpkg into the directory specified by VCPKG_ROOT env var
+
+      - name: Bootstrap vcpkg
+        run: |
+          cd $VCPKG_ROOT
+          if [[ "${{ runner.os }}" == "Windows" ]]; then
+            ./bootstrap-vcpkg.bat -disableMetrics
+          else
+            ./bootstrap-vcpkg.sh -disableMetrics
+          fi
+        shell: bash # Use bash for cross-platform consistency where possible
+
+      # --- Configure Project ---
+      - name: Configure CMake using Preset (${{ matrix.preset }})
+        run: cmake --preset ${{ matrix.preset }}
+        shell: bash
+
+      # --- Build Project ---
+      - name: Build using Preset (${{ matrix.preset }})
+        run: cmake --build --preset ${{ matrix.preset }}
+        shell: bash
