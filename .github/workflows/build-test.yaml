@@ -66,7 +66,10 @@ jobs:
         if: runner.os == 'Linux'
         run: |
           sudo apt-get update
-          sudo apt-get install -y ninja-build autoconf automake libtool pkg-config libltdl-dev
+          sudo apt-get install -y ninja-build autoconf automake libtool pkg-config libltdl-dev \
+                                  libx11-dev libxft-dev libxext-dev \
+                                  libwayland-dev libxkbcommon-dev libegl1-mesa-dev \
+                                  libibus-1.0-dev
         shell: bash
 
       # --- Configure Project ---
