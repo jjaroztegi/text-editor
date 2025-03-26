@@ -2,7 +2,7 @@
 
 ## Core Features
 
-- [ ] Implement logic for UP and DOWN arrow keys to navigate between lines.
+- [x] Implement logic for UP and DOWN arrow keys to navigate between lines.
 - [ ] Add support for text selection and clipboard operations (cut, copy, paste).
 - [ ] Enable saving and loading text files.
 - [ ] Add undo and redo functionality.
@@ -34,3 +34,4 @@
 
 - [x] When zooming forces wordWrap, the cursor position gets misaligned.
 - [ ] Cursor misalignment with multi-byte UTF-8 characters (e.g., "ñ"), where the cursor treats individual bytes instead of whole characters.
+- [ ] Cursor inside wrapped word jumps to end of prev line.
