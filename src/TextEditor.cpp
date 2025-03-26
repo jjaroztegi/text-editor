@@ -204,7 +204,7 @@ void TextEditor::renderText(SDL_Renderer *renderer, int textX, int textY) const 
     TTF_CloseFont(font);
 }
 
-// TODO: curosr inside wrapped word jumps to prev line
+// TODO: cursor inside wrapped word jumps to prev line
 void TextEditor::renderCursor(SDL_Renderer *renderer, int textX, int textY) const {
     TTF_Font *font =
         static_cast<TTF_Font *>(scp(TTF_OpenFont("IosevkaNerdFont-Regular.ttf", textSize)));
@@ -217,7 +217,8 @@ void TextEditor::renderCursor(SDL_Renderer *renderer, int textX, int textY) cons
     int pixelCursorX = textX + pos.x * textWidth;
     int pixelCursorY = textY + pos.y * textHeight;
     SDL_Rect cursorRect = {pixelCursorX, pixelCursorY, textWidth, textHeight};
-    scc(SDL_SetRenderDrawColor(renderer, cursorColor.r, cursorColor.g, cursorColor.b, 255));
+    scc(SDL_SetRenderDrawBlendMode(renderer, SDL_BLENDMODE_ADD));
+    scc(SDL_SetRenderDrawColor(renderer, cursorColor.r, cursorColor.g, cursorColor.b, 180));
     scc(SDL_RenderFillRect(renderer, &cursorRect));
 }
 
