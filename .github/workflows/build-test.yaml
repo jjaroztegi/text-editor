@@ -8,6 +8,8 @@ on:
 
 env:
   VCPKG_ROOT: ${{ github.workspace }}/vcpkg
+  VCPKG_BINARY_CACHE_PATH: ${{ github.workspace }}/.vcpkg-cache
+  VCPKG_BINARY_SOURCES: "clear;files,${{ github.workspace }}/.vcpkg-cache,readwrite"
 
 jobs:
   build:
@@ -31,7 +33,23 @@ jobs:
         uses: actions/checkout@v4
         with:
           repository: "microsoft/vcpkg"
-          path: "vcpkg"
+          path: ${{ env.VCPKG_ROOT }}
+
+      # Add vcpkg caching
+      - name: Get vcpkg commit SHA
+        id: get_vcpkg_sha
+        run: echo "sha=$(git rev-parse HEAD)" >> $GITHUB_OUTPUT
+        working-directory: ${{ env.VCPKG_ROOT }}
+        shell: bash
+
+      - name: Cache vcpkg binaries
+        uses: actions/cache@v4
+        with:
+          path: ${{ env.VCPKG_BINARY_CACHE_PATH }}
+          key: ${{ runner.os }}-vcpkg-${{ steps.get_vcpkg_sha.outputs.sha }}-${{ hashFiles('**/vcpkg.json') }}
+          restore-keys: |
+            ${{ runner.os }}-vcpkg-${{ steps.get_vcpkg_sha.outputs.sha }}-
+            ${{ runner.os }}-vcpkg-
 
       - name: Bootstrap vcpkg
         run: |
