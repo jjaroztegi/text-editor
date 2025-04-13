@@ -3,82 +3,79 @@ name: Build and Test
 on: [push, pull_request]
 
 env:
-  VCPKG_ROOT: ${{ github.workspace }}/vcpkg
-  VCPKG_BINARY_CACHE_PATH: ${{ github.workspace }}/.vcpkg-cache
-  VCPKG_BINARY_SOURCES: "clear;files,${{ github.workspace }}/.vcpkg-cache,readwrite"
+    VCPKG_ROOT: ${{ github.workspace }}/vcpkg
+    VCPKG_BINARY_CACHE_PATH: ${{ github.workspace }}/.vcpkg-cache
+    VCPKG_BINARY_SOURCES: "clear;files,${{ github.workspace }}/.vcpkg-cache,readwrite"
 
 jobs:
-  build:
-    strategy:
-      fail-fast: false
-      matrix:
-        preset:
-          - linux-release
-          - windows-release
-          - macos-release
+    build:
+        strategy:
+            fail-fast: false
+            matrix:
+                preset:
+                    - linux-release
+                    - windows-release
+                    - macos-release
 
-    runs-on: ${{ contains(matrix.preset, 'windows') && 'windows-latest' || (contains(matrix.preset, 'macos') && 'macos-latest' || 'ubuntu-latest') }}
+        runs-on: ${{ contains(matrix.preset, 'windows') && 'windows-latest' || (contains(matrix.preset, 'macos') && 'macos-latest' || 'ubuntu-latest') }}
 
-    steps:
-      # --- Checkout Code ---
-      - name: Checkout repository code
-        uses: actions/checkout@v4
+        steps:
+            # --- Checkout Code ---
+            - name: Checkout repository code
+              uses: actions/checkout@v4
 
-      # --- vcpkg Setup ---
-      - name: Checkout vcpkg repository
-        uses: actions/checkout@v4
-        with:
-          repository: "microsoft/vcpkg"
-          path: ${{ env.VCPKG_ROOT }}
+            # --- vcpkg Setup ---
+            - name: Checkout vcpkg repository
+              uses: actions/checkout@v4
+              with:
+                  repository: "microsoft/vcpkg"
+                  path: ${{ env.VCPKG_ROOT }}
 
-      # Add vcpkg caching
-      - name: Get vcpkg commit SHA
-        id: get_vcpkg_sha
-        run: echo "sha=$(git rev-parse HEAD)" >> $GITHUB_OUTPUT
-        working-directory: ${{ env.VCPKG_ROOT }}
-        shell: bash
+            # Add vcpkg caching
+            - name: Get vcpkg commit SHA
+              id: get_vcpkg_sha
+              run: echo "sha=$(git rev-parse HEAD)" >> $GITHUB_OUTPUT
+              working-directory: ${{ env.VCPKG_ROOT }}
+              shell: bash
 
-      - name: Cache vcpkg binaries
-        uses: actions/cache@v4
-        with:
-          path: ${{ env.VCPKG_BINARY_CACHE_PATH }}
-          key: ${{ runner.os }}-vcpkg-${{ steps.get_vcpkg_sha.outputs.sha }}-${{ hashFiles('**/vcpkg.json') }}
-          restore-keys: |
-            ${{ runner.os }}-vcpkg-${{ steps.get_vcpkg_sha.outputs.sha }}-
-            ${{ runner.os }}-vcpkg-
+            - name: Cache vcpkg binaries
+              uses: actions/cache@v4
+              with:
+                  path: ${{ env.VCPKG_BINARY_CACHE_PATH }}
+                  key: ${{ runner.os }}-vcpkg-${{ steps.get_vcpkg_sha.outputs.sha }}-${{ hashFiles('**/vcpkg.json') }}
+                  restore-keys: |
+                      ${{ runner.os }}-vcpkg-${{ steps.get_vcpkg_sha.outputs.sha }}-
+                      ${{ runner.os }}-vcpkg-
 
-      - name: Bootstrap vcpkg
-        run: |
-          cd $VCPKG_ROOT
-          if [[ "${{ runner.os }}" == "Windows" ]]; then
-            ./bootstrap-vcpkg.bat -disableMetrics
-          else
-            ./bootstrap-vcpkg.sh -disableMetrics
-          fi
-        shell: bash
-        
-      - name: Set CMake Toolchain
-        run: |
-          echo "CMAKE_TOOLCHAIN_FILE=$VCPKG_ROOT/scripts/buildsystems/vcpkg.cmake" >> $GITHUB_ENV
-        shell: bash
+            - name: Bootstrap vcpkg
+              run: |
+                  cd $VCPKG_ROOT
+                  if [[ "${{ runner.os }}" == "Windows" ]]; then
+                    ./bootstrap-vcpkg.bat -disableMetrics
+                  else
+                    ./bootstrap-vcpkg.sh -disableMetrics
+                  fi
+              shell: bash
 
-      # --- Install Linux System Dependencies ---
-      - name: Install required Linux packages
-        if: runner.os == 'Linux'
-        run: |
-          sudo apt-get update
-          sudo apt-get install -y ninja-build autoconf automake libtool pkg-config libltdl-dev \
-                                  libx11-dev libxft-dev libxext-dev \
-                                  libwayland-dev libxkbcommon-dev libegl1-mesa-dev \
-                                  libibus-1.0-dev
-        shell: bash
+            - name: Set CMake Toolchain
+              run: |
+                  echo "CMAKE_TOOLCHAIN_FILE=$VCPKG_ROOT/scripts/buildsystems/vcpkg.cmake" >> $GITHUB_ENV
+              shell: bash
 
-      # --- Configure Project ---
-      - name: Configure CMake using Preset (${{ matrix.preset }})
-        run: cmake --preset ${{ matrix.preset }}
-        shell: bash
+            # --- Install Linux System Dependencies ---
+            - name: Install required Linux packages
+              if: runner.os == 'Linux'
+              run: |
+                  sudo apt-get update
+                  sudo apt-get install -y --no-install-recommends ninja-build pkg-config
+              shell: bash
 
-      # --- Build Project ---
-      - name: Build using Preset (${{ matrix.preset }})
-        run: cmake --build --preset ${{ matrix.preset }}
-        shell: bash
+            # --- Configure Project ---
+            - name: Configure CMake using Preset (${{ matrix.preset }})
+              run: cmake --preset ${{ matrix.preset }}
+              shell: bash
+
+            # --- Build Project ---
+            - name: Build using Preset (${{ matrix.preset }})
+              run: cmake --build --preset ${{ matrix.preset }}
+              shell: bash
