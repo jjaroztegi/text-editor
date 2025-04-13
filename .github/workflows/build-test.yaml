@@ -1,10 +1,6 @@
 name: Build and Test
 
-on:
-  push:
-    branches: ["main"]
-  pull_request:
-    branches: ["main"]
+on: [push, pull_request]
 
 env:
   VCPKG_ROOT: ${{ github.workspace }}/vcpkg
@@ -60,13 +56,21 @@ jobs:
             ./bootstrap-vcpkg.sh -disableMetrics
           fi
         shell: bash
+        
+      - name: Set CMake Toolchain
+        run: |
+          echo "CMAKE_TOOLCHAIN_FILE=$VCPKG_ROOT/scripts/buildsystems/vcpkg.cmake" >> $GITHUB_ENV
+        shell: bash
 
       # --- Install Linux System Dependencies ---
       - name: Install required Linux packages
         if: runner.os == 'Linux'
         run: |
           sudo apt-get update
-          sudo apt-get install -y ninja-build autoconf automake libtool pkg-config libltdl-dev
+          sudo apt-get install -y ninja-build autoconf automake libtool pkg-config libltdl-dev \
+                                  libx11-dev libxft-dev libxext-dev \
+                                  libwayland-dev libxkbcommon-dev libegl1-mesa-dev \
+                                  libibus-1.0-dev
         shell: bash
 
       # --- Configure Project ---
