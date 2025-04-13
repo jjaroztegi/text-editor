@@ -4,7 +4,7 @@ project(text_editor LANGUAGES CXX)
 
 # Locate SDL2 packages
 find_package(SDL2 CONFIG REQUIRED)
-find_package(SDL2_TTF CONFIG REQUIRED)
+find_package(SDL2_ttf CONFIG REQUIRED)
 
 # Add source files
 file(GLOB_RECURSE SOURCES src/*.cpp)
