@@ -1,6 +1,7 @@
 #include "InputHandler.hpp"
 #include "SDLException.hpp"
 #include "TextEditor.hpp"
+
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_ttf.h>
 #include <iostream>
@@ -10,11 +11,10 @@ int main(int argc, char *argv[]) {
         scc(SDL_Init(SDL_INIT_VIDEO));
         scc(TTF_Init());
 
-        SDL_Window *window = static_cast<SDL_Window *>(
-            scp(SDL_CreateWindow("Text Editor", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, 800,
-                                 600, SDL_WINDOW_RESIZABLE)));
-        SDL_Renderer *renderer = static_cast<SDL_Renderer *>(
-            scp(SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED)));
+        SDL_Window *window = static_cast<SDL_Window *>(scp(SDL_CreateWindow(
+            "Text Editor", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, 800, 600, SDL_WINDOW_RESIZABLE)));
+        SDL_Renderer *renderer =
+            static_cast<SDL_Renderer *>(scp(SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED)));
 
         TextEditor editor;
         if (argc > 1)

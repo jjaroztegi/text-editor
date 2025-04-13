@@ -115,6 +115,5 @@ void InputHandler::handleEvent(const SDL_Event &event) {
 
 bool InputHandler::shouldQuit(const SDL_Event &event) const {
     return (event.type == SDL_QUIT) ||
-           (event.type == SDL_KEYDOWN && (SDL_GetModState() & KMOD_CTRL) &&
-            event.key.keysym.sym == SDLK_q);
+           (event.type == SDL_KEYDOWN && (SDL_GetModState() & KMOD_CTRL) && event.key.keysym.sym == SDLK_q);
 }

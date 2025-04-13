@@ -1,6 +1,7 @@
 #pragma once
 
 #include "TextEditor.hpp"
+
 #include <SDL2/SDL.h>
 
 class InputHandler {

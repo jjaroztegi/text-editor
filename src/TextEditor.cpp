@@ -1,12 +1,14 @@
 #include "TextEditor.hpp"
+
 #include "SDLException.hpp"
+
 #include <iostream>
 
 #define textFont "fonts/IosevkaNerdFont-Regular.ttf"
 
 TextEditor::TextEditor()
-    : inputText(""), cursorIndex(0), textSize(20), textColor{244, 244, 244, 255},
-      cursorColor{255, 221, 51, 255}, bgColor{24, 24, 24, 255}, wrapLength(0) {
+    : inputText(""), cursorIndex(0), selectionActive(false), textSize(20), textColor{244, 244, 244, 255}, cursorColor{255, 221, 51, 255},
+      bgColor{24, 24, 24, 255}, wrapLength(0), searching(false), searchQuery("") {
 }
 
 void TextEditor::insertText(const std::string &text) {
@@ -110,16 +112,14 @@ void TextEditor::findSpace(bool dir) {
             if (cursorIndex < inputText.length()) {
                 int count = 1;
                 for (int i = cursorIndex; i < inputText.length(); i++) {
-                    if (i < inputText.length() - 1 && inputText[i] == ' ' &&
-                        inputText[i + 1] == ' ') {
+                    if (i < inputText.length() - 1 && inputText[i] == ' ' && inputText[i + 1] == ' ') {
                         ;
                     } else if (inputText[i] == ' ' || inputText[i] == '\n') {
                         break;
                     }
                     count++;
                 }
-                cursorIndex = (cursorIndex + count >= inputText.length()) ? inputText.length()
-                                                                          : (cursorIndex + count);
+                cursorIndex = (cursorIndex + count >= inputText.length()) ? inputText.length() : (cursorIndex + count);
             }
         } else {
             // Search backward
@@ -235,8 +235,7 @@ void TextEditor::renderText(SDL_Renderer *renderer, int textX, int textY) const 
     TTF_Font *font = static_cast<TTF_Font *>(scp(TTF_OpenFont(textFont, textSize)));
     SDL_Surface *textSurface = static_cast<SDL_Surface *>(
         scp(TTF_RenderUTF8_LCD_Wrapped(font, inputText.c_str(), textColor, bgColor, wrapLength)));
-    SDL_Texture *textTexture =
-        static_cast<SDL_Texture *>(scp(SDL_CreateTextureFromSurface(renderer, textSurface)));
+    SDL_Texture *textTexture = static_cast<SDL_Texture *>(scp(SDL_CreateTextureFromSurface(renderer, textSurface)));
 
     SDL_Rect textRect = {textX, textY, 0, 0};
     scc(SDL_QueryTexture(textTexture, nullptr, nullptr, &textRect.w, &textRect.h));
@@ -264,8 +263,7 @@ void TextEditor::renderCursor(SDL_Renderer *renderer, int textX, int textY) cons
     scc(SDL_RenderFillRect(renderer, &cursorRect));
 }
 
-void TextEditor::renderSelection(SDL_Renderer *renderer, int textX, int textY,
-                                 int textWidth) const {
+void TextEditor::renderSelection(SDL_Renderer *renderer, int textX, int textY, int textWidth) const {
 }
 
 void TextEditor::saveStateForUndo() {

@@ -1,7 +1,10 @@
 #include "SDLException.hpp"
+
 #include <iostream>
 
-const char *SDLException::what() const noexcept { return SDL_GetError(); }
+const char *SDLException::what() const noexcept {
+    return SDL_GetError();
+}
 
 void scc(int code) {
     if (code < 0) {
