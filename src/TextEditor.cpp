@@ -7,8 +7,8 @@
 #define textFont "fonts/IosevkaNerdFont-Regular.ttf"
 
 TextEditor::TextEditor()
-    : inputText(""), cursorIndex(0), selectionActive(false), textSize(20), textColor{244, 244, 244, 255}, cursorColor{255, 221, 51, 255},
-      bgColor{24, 24, 24, 255}, wrapLength(0), searching(false), searchQuery("") {
+    : inputText(""), cursorIndex(0), selectionActive(false), textSize(20), textColor{244, 244, 244, 255},
+      cursorColor{255, 221, 51, 255}, bgColor{24, 24, 24, 255}, wrapLength(0), searching(false), searchQuery("") {
 }
 
 void TextEditor::insertText(const std::string &text) {
@@ -190,7 +190,7 @@ void TextEditor::moveCursor(int delta) {
 void TextEditor::moveCursorVertical(int lines) {
     TTF_Font *font = static_cast<TTF_Font *>(scp(TTF_OpenFont(textFont, textSize)));
     int textWidth, textHeight;
-    scc(TTF_SizeText(font, " ", &textWidth, &textHeight)); // Monospace assumption
+    scc(TTF_GetStringSize(font, " ", 1, &textWidth, &textHeight)); // Monospace assumption
     TTF_CloseFont(font);
 
     CursorPos currentPos = getCursorPosition(cursorIndex, textWidth);
@@ -233,16 +233,20 @@ void TextEditor::renderText(SDL_Renderer *renderer, int textX, int textY) const 
         return;
 
     TTF_Font *font = static_cast<TTF_Font *>(scp(TTF_OpenFont(textFont, textSize)));
-    SDL_Surface *textSurface = static_cast<SDL_Surface *>(
-        scp(TTF_RenderUTF8_LCD_Wrapped(font, inputText.c_str(), textColor, bgColor, wrapLength)));
-    SDL_Texture *textTexture = static_cast<SDL_Texture *>(scp(SDL_CreateTextureFromSurface(renderer, textSurface)));
 
-    SDL_Rect textRect = {textX, textY, 0, 0};
-    scc(SDL_QueryTexture(textTexture, nullptr, nullptr, &textRect.w, &textRect.h));
-    scc(SDL_RenderCopy(renderer, textTexture, nullptr, &textRect));
+    TTF_TextEngine *engine = static_cast<TTF_TextEngine *>(scp(TTF_CreateRendererTextEngine(renderer)));
+    TTF_Text *text = static_cast<TTF_Text *>(scp(TTF_CreateText(engine, font, inputText.c_str(), inputText.length())));
 
-    SDL_DestroyTexture(textTexture);
-    SDL_FreeSurface(textSurface);
+    scc(TTF_SetTextColor(text, textColor.r, textColor.g, textColor.b, textColor.a));
+
+    if (wrapLength > 0) {
+        scc(TTF_SetTextWrapWidth(text, wrapLength));
+    }
+
+    scc(TTF_DrawRendererText(text, static_cast<float>(textX), static_cast<float>(textY)));
+
+    TTF_DestroyText(text);
+    TTF_DestroyRendererTextEngine(engine);
     TTF_CloseFont(font);
 }
 
@@ -250,14 +254,15 @@ void TextEditor::renderText(SDL_Renderer *renderer, int textX, int textY) const 
 void TextEditor::renderCursor(SDL_Renderer *renderer, int textX, int textY) const {
     TTF_Font *font = static_cast<TTF_Font *>(scp(TTF_OpenFont(textFont, textSize)));
     int textWidth, textHeight;
-    scc(TTF_SizeText(font, " ", &textWidth, &textHeight)); // Monospace assumption
+    scc(TTF_GetStringSize(font, " ", 1, &textWidth, &textHeight)); // Monospace assumption
     TTF_CloseFont(font);
 
     CursorPos pos = getCursorPosition(cursorIndex, textWidth);
 
     int pixelCursorX = textX + pos.x * textWidth;
     int pixelCursorY = textY + pos.y * textHeight;
-    SDL_Rect cursorRect = {pixelCursorX, pixelCursorY, textWidth, textHeight};
+    SDL_FRect cursorRect = {static_cast<float>(pixelCursorX), static_cast<float>(pixelCursorY),
+                            static_cast<float>(textWidth), static_cast<float>(textHeight)};
     scc(SDL_SetRenderDrawBlendMode(renderer, SDL_BLENDMODE_ADD));
     scc(SDL_SetRenderDrawColor(renderer, cursorColor.r, cursorColor.g, cursorColor.b, 180));
     scc(SDL_RenderFillRect(renderer, &cursorRect));
@@ -272,7 +277,7 @@ void TextEditor::saveStateForUndo() {
 void TextEditor::render(SDL_Renderer *renderer, int textX, int textY) const {
     TTF_Font *font = static_cast<TTF_Font *>(scp(TTF_OpenFont(textFont, textSize)));
     int textWidth, textHeight;
-    scc(TTF_SizeText(font, " ", &textWidth, &textHeight));
+    scc(TTF_GetStringSize(font, " ", 1, &textWidth, &textHeight));
     TTF_CloseFont(font);
 
     renderSelection(renderer, textX, textY, textWidth);

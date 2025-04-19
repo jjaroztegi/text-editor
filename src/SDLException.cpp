@@ -6,16 +6,26 @@ const char *SDLException::what() const noexcept {
     return SDL_GetError();
 }
 
-void scc(int code) {
-    if (code < 0) {
-        std::cerr << "SDL Error: " << SDL_GetError() << std::endl;
+void scc(bool success) {
+    if (!success) {
+        const char *error = SDL_GetError();
+        if (error && *error != '\0') {
+            std::cerr << "SDL Error: " << error << std::endl;
+        } else {
+            std::cerr << "SDL Error: Unknown error" << std::endl;
+        }
         throw SDLException();
     }
 }
 
 void *scp(void *ptr) {
     if (ptr == nullptr) {
-        std::cerr << "SDL Error: " << SDL_GetError() << std::endl;
+        const char *error = SDL_GetError();
+        if (error && *error != '\0') {
+            std::cerr << "SDL Error: " << error << std::endl;
+        } else {
+            std::cerr << "SDL Error: Null pointer returned" << std::endl;
+        }
         throw SDLException();
     }
     return ptr;
