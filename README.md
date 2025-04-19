@@ -2,6 +2,66 @@
 
 A simple text editor built using C++ and SDL3, featuring a clean interface and essential text editing capabilities.
 
+## Requirements
+
+-   C++20 compiler
+-   [SDL3](https://github.com/libsdl-org/SDL) and [SDL3_ttf](https://github.com/libsdl-org/SDL_ttf)
+-   [CMake](https://cmake.org/) (minimum version 3.16)
+
+## Building the Project
+
+### Cloning the Repository
+
+```sh
+git clone --depth=1 --recurse-submodules https://github.com/jjaroztegi/text-editor.git
+cd text-editor
+```
+
+### Generic Build Instructions
+
+1. Configure the project:
+
+    ```sh
+    cmake -S . -B build
+    ```
+
+2. Build the project:
+    ```sh
+    cmake --build build --target text_editor --config Release
+    ```
+
+### Using CMake Presets
+
+This project supports CMake presets for easier configuration:
+
+-   Windows: Visual Studio 2022 generator
+-   Linux: Ninja generator
+-   macOS: Xcode generator
+
+Available presets:
+
+-   `windows-release`, `windows-development`
+-   `linux-release`, `linux-development`
+-   `macos-release`, `macos-development`
+
+To use presets:
+
+```sh
+cmake --preset <platform>-<build-type>
+cmake --build build --preset <platform>-<build-type>
+```
+
+Example for Windows release build:
+
+```sh
+cmake --preset windows-release
+cmake --build build --preset windows-release
+```
+
+### Using an IDE
+
+You can also use an init script inside `config/` directory. Then open the IDE project inside `build/` and run!
+
 ## Features
 
 ### Implemented Features
@@ -48,52 +108,6 @@ A simple text editor built using C++ and SDL3, featuring a clean interface and e
 | Ctrl + Left/Right  | Move by word          |
 | Shift + Arrow keys | Select text           |
 | Escape             | Stop search/selection |
-
-## Requirements
-
--   C++20 compiler
--   [SDL3](https://github.com/libsdl-org/SDL) and [SDL3_ttf](https://github.com/libsdl-org/SDL_ttf)
--   [CMake](https://cmake.org/) (minimum version 3.22)
--   [vcpkg](https://github.com/microsoft/vcpkg) for dependency management
-
-## Building the Project
-
-Make sure to set the `VCPKG_ROOT` environment variable to the path of your vcpkg installation before building.
-
-### Build Configuration
-
-This project uses CMake presets for easy configuration and building:
-
--   Windows: Visual Studio 2022 generator
--   Linux/macOS: Ninja generator
-
-Available presets:
-
--   `windows-release`, `windows-development`
--   `linux-release`, `linux-development`
--   `macos-release`, `macos-development`
-
-### Building
-
-1. Configure the project:
-
-    ```sh
-    cmake --preset <platform>-<build-type>
-    ```
-
-2. Build the project:
-    ```sh
-    cmake --build build --preset <platform>-<build-type>
-    ```
-
-Example for Windows release build:
-
-```sh
-cmake --preset windows-release
-cmake --build build --preset windows-release
-```
-
-Note: Building SDL3 dependencies with vcpkg on Unix systems (Linux/macOS) may take longer than on Windows.
 
 ## Known Issues
 

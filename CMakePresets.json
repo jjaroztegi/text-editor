@@ -2,7 +2,7 @@
     "version": 3,
     "cmakeMinimumRequired": {
         "major": 3,
-        "minor": 22,
+        "minor": 16,
         "patch": 0
     },
     "configurePresets": [
@@ -13,11 +13,7 @@
             "installDir": "${sourceDir}/install/${presetName}",
             "generator": "Ninja",
             "cacheVariables": {
-                "CMAKE_TOOLCHAIN_FILE": {
-                    "type": "FILEPATH",
-                    "value": "$env{VCPKG_ROOT}/scripts/buildsystems/vcpkg.cmake"
-                },
-                "VCPKG_FEATURE_FLAGS": "versions"
+                "CMAKE_BUILD_TYPE": "RelWithDebInfo"
             }
         },
         {
@@ -25,6 +21,7 @@
             "displayName": "Linux release",
             "description": "Configure with Linux release settings",
             "inherits": "base",
+            "generator": "Ninja",
             "cacheVariables": {
                 "CMAKE_BUILD_TYPE": "RelWithDebInfo"
             }
@@ -36,7 +33,9 @@
             "inherits": "base",
             "generator": "Visual Studio 17 2022",
             "cacheVariables": {
-                "CMAKE_BUILD_TYPE": "RelWithDebInfo"
+                "CMAKE_BUILD_TYPE": "RelWithDebInfo",
+                "CMAKE_SYSTEM_NAME": "Windows",
+                "CMAKE_SYSTEM_VERSION": "10.0"
             }
         },
         {
@@ -44,8 +43,10 @@
             "displayName": "MacOS release",
             "description": "Configure with MacOS release settings",
             "inherits": "base",
+            "generator": "Xcode",
             "cacheVariables": {
-                "CMAKE_BUILD_TYPE": "RelWithDebInfo"
+                "CMAKE_BUILD_TYPE": "RelWithDebInfo",
+                "CMAKE_XCODE_ATTRIBUTE_CODE_SIGNING_ALLOWED": "NO"
             }
         },
         {
@@ -53,6 +54,7 @@
             "displayName": "Linux development configuration",
             "description": "Configure with Linux development settings",
             "inherits": "base",
+            "generator": "Ninja",
             "cacheVariables": {
                 "CMAKE_BUILD_TYPE": "Debug"
             }
@@ -64,7 +66,9 @@
             "inherits": "base",
             "generator": "Visual Studio 17 2022",
             "cacheVariables": {
-                "CMAKE_BUILD_TYPE": "Debug"
+                "CMAKE_BUILD_TYPE": "Debug",
+                "CMAKE_SYSTEM_NAME": "Windows",
+                "CMAKE_SYSTEM_VERSION": "10.0"
             }
         },
         {
@@ -72,8 +76,10 @@
             "displayName": "MacOS development",
             "description": "Configure with MacOS development settings",
             "inherits": "base",
+            "generator": "Xcode",
             "cacheVariables": {
-                "CMAKE_BUILD_TYPE": "Debug"
+                "CMAKE_BUILD_TYPE": "Debug",
+                "CMAKE_XCODE_ATTRIBUTE_CODE_SIGNING_ALLOWED": "NO"
             }
         }
     ],
@@ -82,37 +88,47 @@
             "name": "linux-release",
             "configurePreset": "linux-release",
             "displayName": "Linux release",
-            "description": "Build with Linux release settings"
+            "description": "Build with Linux release settings",
+            "targets": ["text_editor"]
         },
         {
             "name": "windows-release",
             "configurePreset": "windows-release",
             "displayName": "Windows release",
-            "description": "Build with Windows release settings"
+            "description": "Build with Windows release settings",
+            "targets": ["text_editor"],
+            "configuration": "Release"
         },
         {
             "name": "macos-release",
             "configurePreset": "macos-release",
             "displayName": "MacOS release",
-            "description": "Build with MacOS release settings"
+            "description": "Build with MacOS release settings",
+            "targets": ["text_editor"],
+            "configuration": "Release"
         },
         {
             "name": "linux-development",
             "configurePreset": "linux-development",
             "displayName": "Linux development",
-            "description": "Build with Linux development settings"
+            "description": "Build with Linux development settings",
+            "targets": ["text_editor"]
         },
         {
             "name": "windows-development",
             "configurePreset": "windows-development",
             "displayName": "Windows development",
-            "description": "Build with Windows development settings"
+            "description": "Build with Windows development settings",
+            "targets": ["text_editor"],
+            "configuration": "Debug"
         },
         {
             "name": "macos-development",
             "configurePreset": "macos-development",
             "displayName": "MacOS development",
-            "description": "Build with MacOS development settings"
+            "description": "Build with MacOS development settings",
+            "targets": ["text_editor"],
+            "configuration": "Debug"
         }
     ],
     "testPresets": []
