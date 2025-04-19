@@ -6,6 +6,10 @@
 #include <SDL3_ttf/SDL_ttf.h>
 #include <iostream>
 
+#ifdef _WIN32
+#include <windows.h>
+#endif
+
 int main(int argc, char *argv[]) {
     try {
         scc(SDL_Init(SDL_INIT_VIDEO));
@@ -52,3 +56,9 @@ int main(int argc, char *argv[]) {
     }
     return 0;
 }
+
+#ifdef _WIN32
+int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int nCmdShow) {
+    return main(__argc, __argv);
+}
+#endif

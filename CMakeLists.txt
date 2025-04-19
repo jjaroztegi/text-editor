@@ -27,7 +27,11 @@ endif()
 # Set the name of the executable
 set(EXECUTABLE_NAME ${PROJECT_NAME})
 
-add_executable(${EXECUTABLE_NAME})
+if(WIN32)
+    add_executable(${EXECUTABLE_NAME} WIN32)
+else()
+    add_executable(${EXECUTABLE_NAME})
+endif()
 
 # Add your sources to the target
 target_sources(${EXECUTABLE_NAME} 

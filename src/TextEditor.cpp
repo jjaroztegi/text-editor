@@ -2,6 +2,7 @@
 
 #include "SDLException.hpp"
 
+#include <filesystem>
 #include <iostream>
 
 TextEditor::TextEditor()

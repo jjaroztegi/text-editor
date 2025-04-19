@@ -1,5 +1,9 @@
 #include "InputHandler.hpp"
 
+#include "TextEditor.hpp"
+
+#include <SDL3/SDL.h>
+
 InputHandler::InputHandler(TextEditor &e) : editor(e) {
 }
 

@@ -27,7 +27,7 @@ jobs:
                 path: |
                     build/Release/*.exe
                     build/Release/*.dll
-                    build/Release/*.ttf
+                    build/Release/fonts/*.ttf
                     build/Release/*.ogg
                     build/Release/*.svg
                     
@@ -53,7 +53,7 @@ jobs:
                 path: |
                     build/Release/text_editor
                     build/Release/*.so
-                    build/Release/*.ttf
+                    build/Release/fonts/*.ttf
                     build/Release/*.ogg
                     build/Release/*.svg
 
