@@ -1,37 +1,44 @@
-# TODO: Missing Features
+# TODO List
 
 ## Core Features
 
-- [x] Implement logic for UP and DOWN arrow keys to navigate between lines.
-- [ ] Add support for text selection and clipboard operations (cut, copy, paste).
-- [ ] Enable saving and loading text files.
-- [ ] Add undo and redo functionality.
+### Implemented
 
-## User Interface
+-   [x] Basic text rendering
+-   [x] Cursor movement and rendering
+-   [x] Text insertion and deletion
+-   [x] Word-by-word navigation
+-   [x] Line-by-line navigation
+-   [x] Adjustable text size
+-   [x] Resizable window with automatic text wrapping
 
-- [ ] Display line numbers on the left side of the text editor.
-- [ ] Add a status bar to show cursor position, file name, and text size.
-- [ ] Implement a settings menu for customizing font, text size, and colors.
+### In Progress
 
-## Advanced Features
+-   [ ] File operations (save/load)
+-   [ ] Search functionality
+-   [ ] Undo/Redo support
+-   [ ] Copy/Paste operations
+-   [ ] Text selection
 
-- [ ] Add syntax highlighting for programming languages.
-- [ ] Implement search and replace functionality.
-- [ ] Enable word wrap toggle.
-- [ ] Drag and drop support for opening files.
+### Planned
 
-## Performance
+-   [ ] Line numbers display
+-   [ ] Status bar with cursor position and file info
+-   [ ] Settings menu for customization
+-   [ ] Syntax highlighting
+-   [ ] Search and replace functionality
+-   [ ] Word wrap toggle
+-   [ ] Drag and drop support
+-   [ ] Dark/light mode toggle
 
-- [ ] Optimize rendering for large text files.
-- [ ] Improve cursor rendering to handle variable-width fonts.
+## Bug Fixes
 
-## Accessibility
+-   [ ] Fix cursor misalignment with multi-byte UTF-8 characters
+-   [ ] Fix cursor position issues when word wrapping is active
 
-- [ ] Add keyboard shortcuts for common actions (e.g., save, open, find).
-- [ ] Support option to toggle dark and light mode.
+## Improvements
 
-## Bugs
-
-- [x] When zooming forces wordWrap, the cursor position gets misaligned.
-- [ ] Cursor misalignment with multi-byte UTF-8 characters (e.g., "ñ"), where the cursor treats individual bytes instead of whole characters.
-- [ ] Cursor inside wrapped word jumps to end of prev line.
+-   [ ] Optimize text rendering for large files
+-   [ ] Add support for different fonts and styles
+-   [ ] Add support for tabs and indentation settings
+-   [ ] Add support for regular expressions in search

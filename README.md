@@ -1,86 +1,109 @@
 # Text Editor
 
-A simple text editor built using C++ and SDL2, with support for text rendering, cursor movement, and basic text editing features.
+A simple text editor built using C++ and SDL3, featuring a clean interface and essential text editing capabilities.
 
 ## Features
 
-- Text rendering with line wrapping
-- Cursor movement and rendering
-- Basic text editing (insertion, deletion, and navigation)
-- Adjustable text size using `Ctrl + Plus` and `Ctrl + Minus`
-- Cross-platform support (Windows, Linux, macOS)
+### Implemented Features
+
+-   Text rendering with automatic line wrapping
+-   Cursor movement and rendering
+-   Basic text editing operations:
+    -   Insert and delete text
+    -   Word-by-word navigation
+    -   Line-by-line navigation
+-   Adjustable text size (Ctrl + Plus/Minus)
+-   Resizable window with automatic text wrapping
+
+### Planned Features
+
+-   File operations (save/load)
+-   Search functionality (Ctrl + F)
+-   Undo/Redo support (Ctrl + Z/Y)
+-   Copy/Paste operations (Ctrl + C/V)
+-   Text selection with Shift + Arrow keys
+-   Line numbers display
+-   Status bar with cursor position and file info
+-   Settings menu for customization
+-   Syntax highlighting
+-   Search and replace functionality
+-   Word wrap toggle
+-   Drag and drop support
+-   Dark/light mode toggle
+
+## Keyboard Shortcuts
+
+| Shortcut           | Action                |
+| ------------------ | --------------------- |
+| Ctrl + Q           | Quit editor           |
+| Ctrl + S           | Save file             |
+| Ctrl + O           | Open file             |
+| Ctrl + F           | Start search          |
+| Ctrl + Z           | Undo                  |
+| Ctrl + Y           | Redo                  |
+| Ctrl + C           | Copy selection        |
+| Ctrl + V           | Paste                 |
+| Ctrl + Plus        | Increase text size    |
+| Ctrl + Minus       | Decrease text size    |
+| Ctrl + Left/Right  | Move by word          |
+| Shift + Arrow keys | Select text           |
+| Escape             | Stop search/selection |
 
 ## Requirements
 
-- C++20 compiler
-- [SDL2](https://github.com/libsdl-org/SDL) and [SDL2_ttf](https://github.com/libsdl-org/SDL_ttf)
-- [CMake](https://cmake.org/) (minimum version 3.22)
-- [vcpkg](https://github.com/microsoft/vcpkg) for dependency management
+-   C++20 compiler
+-   [SDL3](https://github.com/libsdl-org/SDL) and [SDL3_ttf](https://github.com/libsdl-org/SDL_ttf)
+-   [CMake](https://cmake.org/) (minimum version 3.22)
+-   [vcpkg](https://github.com/microsoft/vcpkg) for dependency management
 
 ## Building the Project
 
 Make sure to set the `VCPKG_ROOT` environment variable to the path of your vcpkg installation before building.
 
-### Windows
+### Build Configuration
 
-This project uses Visual Studio 2022 as the generator on Windows.
+This project uses CMake presets for easy configuration and building:
 
-1. Configure the project using CMake:
+-   Windows: Visual Studio 2022 generator
+-   Linux/macOS: Ninja generator
 
-   ```sh
-   cmake --preset windows-release
-   ```
+Available presets:
+
+-   `windows-release`, `windows-development`
+-   `linux-release`, `linux-development`
+-   `macos-release`, `macos-development`
+
+### Building
+
+1. Configure the project:
+
+    ```sh
+    cmake --preset <platform>-<build-type>
+    ```
 
 2. Build the project:
-   ```sh
-   cmake --build build --preset windows-release
-   ```
+    ```sh
+    cmake --build build --preset <platform>-<build-type>
+    ```
 
-### Linux
-
-This project uses Ninja as the generator on Linux. Also note that using vcpkg to build SDL2 on Unix systems may take a significant amount of time.
-
-1. Configure and build using CMake:
-   ```sh
-   cmake --preset linux-release
-   cmake --build build --preset linux-release
-   ```
-
-### macOS
-
-This project uses Ninja as the generator on macOS. Similar to Linux, building SDL2 dependencies with vcpkg on macOS may take longer than on Windows.
-
-1. Configure and build using CMake:
-   ```sh
-   cmake --preset macos-release
-   cmake --build build --preset macos-release
-   ```
-
-## Development Build
-
-For development purposes, you can use the development presets:
-
-- Windows: `windows-development`
-- Linux: `linux-development`
-- macOS: `macos-development`
-
-Example:
+Example for Windows release build:
 
 ```sh
-cmake --preset linux-development
-cmake --build build --preset linux-development
+cmake --preset windows-release
+cmake --build build --preset windows-release
 ```
 
-## CMake Presets
+Note: Building SDL3 dependencies with vcpkg on Unix systems (Linux/macOS) may take longer than on Windows.
 
-This project uses CMake presets for easy configuration and building. Windows presets use Visual Studio 2022 as the generator, while Linux and macOS presets use Ninja. The available presets are:
+## Known Issues
 
-- `linux-release`: Linux release build
-- `windows-release`: Windows release build
-- `macos-release`: macOS release build
-- `linux-development`: Linux debug build
-- `windows-development`: Windows debug build
-- `macos-development`: macOS debug build
+-   Cursor misalignment with multi-byte UTF-8 characters
+-   Cursor position issues when word wrapping is active
+-   Some planned features are not yet implemented (see TODO.md for details)
+
+## Contributing
+
+Contributions are welcome! Please feel free to submit a Pull Request.
 
 ## License
 
