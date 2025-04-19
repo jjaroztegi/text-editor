@@ -4,9 +4,11 @@
 #include <SDL3_ttf/SDL_ttf.h>
 #include <stack>
 #include <string>
+#include <filesystem>
 
 class TextEditor {
 private:
+    std::filesystem::path fontPath;
     std::string inputText;
     int cursorIndex;
     bool selectionActive;

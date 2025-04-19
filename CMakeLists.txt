@@ -54,6 +54,32 @@ target_link_libraries(${EXECUTABLE_NAME} PUBLIC
     SDL3::SDL3
 )
 
+# Dealing with assets
+# We have some non-code resources that our application needs in order to work. How we deal with those differs per platform.
+if (APPLE)
+    # on Apple targets, the application bundle has a "resources" subfolder where we can place our assets.
+    # SDL_GetBasePath() gives us easy access to that location.
+    set(input_root "${CMAKE_CURRENT_LIST_DIR}")
+    macro(add_resource FILE)
+        file(RELATIVE_PATH relpath "${input_root}" "${FILE}")
+        get_filename_component(relpath "${relpath}" DIRECTORY)
+        target_sources(${EXECUTABLE_NAME} PRIVATE ${FILE})
+        set_property(SOURCE ${FILE} PROPERTY MACOSX_PACKAGE_LOCATION "Resources/${relpath}")
+    endmacro()
+    add_resource("${CMAKE_CURRENT_LIST_DIR}/fonts/IosevkaNerdFont-Regular.ttf")
+else()
+    macro(copy_helper filename)
+        # for platforms that do not have a good packaging format, all we can do is copy the assets to the process working directory.
+        set(outname "${CMAKE_BINARY_DIR}/$<CONFIGURATION>/${filename}")
+        add_custom_command(POST_BUILD
+            TARGET "${EXECUTABLE_NAME}"
+		    COMMAND ${CMAKE_COMMAND} -E copy_if_different "${CMAKE_CURRENT_LIST_DIR}/${filename}" "${outname}"
+		    DEPENDS "${filename}"
+	    )
+    endmacro()
+    copy_helper("fonts/IosevkaNerdFont-Regular.ttf")
+endif()
+
 set_target_properties(${EXECUTABLE_NAME} PROPERTIES 
     # On macOS, make a proper .app bundle instead of a bare executable
     MACOSX_BUNDLE TRUE
@@ -61,8 +87,8 @@ set_target_properties(${EXECUTABLE_NAME} PROPERTIES
     # in Xcode, create a Scheme in the schemes dropdown for the app.
     XCODE_GENERATE_SCHEME TRUE
     # Identification for Xcode
-    XCODE_ATTRIBUTE_BUNDLE_IDENTIFIER "com.ravbug.sdl3-sample"
-	XCODE_ATTRIBUTE_PRODUCT_BUNDLE_IDENTIFIER "com.ravbug.sdl3-sample"
+    XCODE_ATTRIBUTE_BUNDLE_IDENTIFIER "com.jjaroztegi.text_editor"
+	XCODE_ATTRIBUTE_PRODUCT_BUNDLE_IDENTIFIER "com.jjaroztegi.text_editor"
 	XCODE_ATTRIBUTE_CURRENTYEAR "${CURRENTYEAR}"
     RESOURCE "${RESOURCE_FILES}"
 )

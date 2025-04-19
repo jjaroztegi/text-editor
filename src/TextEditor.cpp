@@ -4,11 +4,12 @@
 
 #include <iostream>
 
-#define textFont "fonts/IosevkaNerdFont-Regular.ttf"
-
 TextEditor::TextEditor()
     : inputText(""), cursorIndex(0), selectionActive(false), textSize(20), textColor{244, 244, 244, 255},
       cursorColor{255, 221, 51, 255}, bgColor{24, 24, 24, 255}, wrapLength(0), searching(false), searchQuery("") {
+
+    const std::filesystem::path basePath = SDL_GetBasePath();
+    fontPath = basePath / "fonts" / "IosevkaNerdFont-Regular.ttf";
 }
 
 void TextEditor::insertText(const std::string &text) {
@@ -188,7 +189,7 @@ void TextEditor::moveCursor(int delta) {
 }
 
 void TextEditor::moveCursorVertical(int lines) {
-    TTF_Font *font = static_cast<TTF_Font *>(scp(TTF_OpenFont(textFont, textSize)));
+    TTF_Font *font = static_cast<TTF_Font *>(scp(TTF_OpenFont(fontPath.string().c_str(), textSize)));
     int textWidth, textHeight;
     scc(TTF_GetStringSize(font, " ", 1, &textWidth, &textHeight)); // Monospace assumption
     TTF_CloseFont(font);
@@ -232,7 +233,7 @@ void TextEditor::renderText(SDL_Renderer *renderer, int textX, int textY) const 
     if (inputText.empty())
         return;
 
-    TTF_Font *font = static_cast<TTF_Font *>(scp(TTF_OpenFont(textFont, textSize)));
+    TTF_Font *font = static_cast<TTF_Font *>(scp(TTF_OpenFont(fontPath.string().c_str(), textSize)));
 
     TTF_TextEngine *engine = static_cast<TTF_TextEngine *>(scp(TTF_CreateRendererTextEngine(renderer)));
     TTF_Text *text = static_cast<TTF_Text *>(scp(TTF_CreateText(engine, font, inputText.c_str(), inputText.length())));
@@ -252,7 +253,7 @@ void TextEditor::renderText(SDL_Renderer *renderer, int textX, int textY) const 
 
 // TODO: cursor inside wrapped word jumps to prev line
 void TextEditor::renderCursor(SDL_Renderer *renderer, int textX, int textY) const {
-    TTF_Font *font = static_cast<TTF_Font *>(scp(TTF_OpenFont(textFont, textSize)));
+    TTF_Font *font = static_cast<TTF_Font *>(scp(TTF_OpenFont(fontPath.string().c_str(), textSize)));
     int textWidth, textHeight;
     scc(TTF_GetStringSize(font, " ", 1, &textWidth, &textHeight)); // Monospace assumption
     TTF_CloseFont(font);
@@ -275,7 +276,7 @@ void TextEditor::saveStateForUndo() {
 }
 
 void TextEditor::render(SDL_Renderer *renderer, int textX, int textY) const {
-    TTF_Font *font = static_cast<TTF_Font *>(scp(TTF_OpenFont(textFont, textSize)));
+    TTF_Font *font = static_cast<TTF_Font *>(scp(TTF_OpenFont(fontPath.string().c_str(), textSize)));
     int textWidth, textHeight;
     scc(TTF_GetStringSize(font, " ", 1, &textWidth, &textHeight));
     TTF_CloseFont(font);
